@@ -62,7 +62,6 @@ from lightning.fabric.strategies.fsdp import (
 from lightning.fabric.strategies.model_parallel import _load_raw_module_state
 from lightning.fabric.utilities.distributed import (
     _distributed_is_initialized,
-    _get_default_process_group_backend_for_device,
     _init_dist_connection,
     _sync_ddp_if_available,
 )
@@ -275,8 +274,9 @@ class FSDPStrategy(ParallelStrategy):
             self.kwargs["device_mesh"] = init_device_mesh("cuda", self.kwargs["device_mesh"])
 
     def _get_process_group_backend(self) -> str:
-        return self._process_group_backend or _get_default_process_group_backend_for_device(self.root_device)
-
+        assert self.accelerator is not None
+        return self._process_group_backend or self.accelerator.get_distribute_name()
+        
     def set_world_ranks(self) -> None:
         if self.cluster_environment is not None:
             self.cluster_environment.set_global_rank(self.node_rank * self.num_processes + self.local_rank)

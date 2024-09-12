@@ -94,7 +94,7 @@ def _setup_args() -> Dict[str, Any]:
         "include_package_data": True,
         "zip_safe": False,
         "keywords": ["deep learning", "pytorch", "AI"],
-        "python_requires": ">=3.9",
+        "python_requires": ">=3.8",
         "entry_points": {
             "console_scripts": [
                 "fabric = lightning.fabric.cli:_main",

@@ -33,6 +33,7 @@ from lightning.fabric.utilities.imports import _IS_INTERACTIVE
 from lightning.pytorch.accelerators import AcceleratorRegistry
 from lightning.pytorch.accelerators.accelerator import Accelerator
 from lightning.pytorch.accelerators.cuda import CUDAAccelerator
+from lightning.pytorch.accelerators.npu import NPUAccelerator
 from lightning.pytorch.accelerators.mps import MPSAccelerator
 from lightning.pytorch.accelerators.xla import XLAAccelerator
 from lightning.pytorch.plugins import (
@@ -342,6 +343,8 @@ class _AcceleratorConnector:
             return "mps"
         if CUDAAccelerator.is_available():
             return "cuda"
+        if NPUAccelerator.is_available():
+            return "npu"
         return "cpu"
 
     @staticmethod
@@ -438,7 +441,7 @@ class _AcceleratorConnector:
             return "ddp"
         if len(self._parallel_devices) <= 1:
             if isinstance(self._accelerator_flag, (CUDAAccelerator, MPSAccelerator)) or (
-                isinstance(self._accelerator_flag, str) and self._accelerator_flag in ("cuda", "gpu", "mps")
+                isinstance(self._accelerator_flag, str) and self._accelerator_flag in ("cuda", "gpu", "mps", "npu")
             ):
                 device = _determine_root_gpu_device(self._parallel_devices)
             else:
@@ -458,9 +461,9 @@ class _AcceleratorConnector:
 
         if (
             strategy_flag in FSDPStrategy.get_registered_strategies() or type(self._strategy_flag) is FSDPStrategy
-        ) and self._accelerator_flag not in ("cuda", "gpu"):
+        ) and self._accelerator_flag not in ("cuda", "gpu", "npu"):
             raise ValueError(
-                f"The strategy `{FSDPStrategy.strategy_name}` requires a GPU accelerator, but got:"
+                f"The strategy `{FSDPStrategy.strategy_name}` requires a GPU or NPU accelerator, but got:"
                 f" {self._accelerator_flag}"
             )
         if strategy_flag in _DDP_FORK_ALIASES and "fork" not in torch.multiprocessing.get_all_start_methods():

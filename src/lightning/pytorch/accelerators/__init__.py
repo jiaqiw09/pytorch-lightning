@@ -18,6 +18,7 @@ from lightning.fabric.utilities.registry import _register_classes
 from lightning.pytorch.accelerators.accelerator import Accelerator
 from lightning.pytorch.accelerators.cpu import CPUAccelerator  # noqa: F401
 from lightning.pytorch.accelerators.cuda import CUDAAccelerator  # noqa: F401
+from lightning.pytorch.accelerators.npu import NPUAccelerator  # noqa: F401
 from lightning.pytorch.accelerators.mps import MPSAccelerator  # noqa: F401
 from lightning.pytorch.accelerators.xla import XLAAccelerator  # noqa: F401
 
